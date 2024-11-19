@@ -17,7 +17,7 @@ async fn cheapo_request(host: &str, port: u16, path: &str) -> std::io::Result<St
 fn main() -> std::io::Result<()> {
     use async_std::task;
 
-    let response = task::block_on(async { cheapo_request("127.0.0.1", 55762, "/").await })?;
+    let response = task::block_on(async { cheapo_request("example.com", 80, "/").await })?;
     println!("{}", response);
     Ok(())
 }
