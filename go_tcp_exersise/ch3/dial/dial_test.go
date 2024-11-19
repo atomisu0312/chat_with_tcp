@@ -8,7 +8,7 @@ import (
 
 func TestDial(t *testing.T) {
 	// Create a listener on a random port.
-	listener, err := net.Listen("tcp", "127.0.0.1:8080")
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,6 +48,11 @@ func TestDial(t *testing.T) {
 
 	conn, err := net.Dial("tcp", listener.Addr().String())
 	if err != nil {
+		t.Fatal(err)
+	}
+
+	// send some data to listner from client
+	if _, err := conn.Write([]byte("SAMURAI")); err != nil {
 		t.Fatal(err)
 	}
 
