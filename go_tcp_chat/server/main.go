@@ -8,7 +8,14 @@ import (
 )
 
 func main() {
-	address := "localhost:50880"
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: client ADDRESS:PORT")
+		return
+	}
+
+	address := os.Args[1]
+
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
@@ -31,18 +38,19 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	fmt.Println("Client connected:", conn.RemoteAddr())
 
-	scanner := bufio.NewScanner(conn)
-	for scanner.Scan() {
-		message := scanner.Text()
+	reader := bufio.NewReader(conn)
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading from client:", err)
+			break
+		}
 		fmt.Println("Received:", message)
-		_, err := fmt.Fprintf(conn, "Echo: %s\n", message)
+		_, err = fmt.Fprintf(conn, "Echo: %s", message)
 		if err != nil {
 			fmt.Println("Error sending response:", err)
 			return
 		}
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading from client:", err)
 	}
 	fmt.Println("Client disconnected:", conn.RemoteAddr())
 }
